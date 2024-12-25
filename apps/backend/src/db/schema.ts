@@ -88,8 +88,8 @@ export const invoices = pgTable('invoices', {
 
 export const invoiceProducts = pgTable('invoice_products', {
   id: serial('id').primaryKey(),
-  invoiceId: integer('invoice_id').notNull().references(() => invoices.id),
-  productId: integer('product_id').notNull().references(() => products.id),
+  invoiceId: integer('invoice_id').references(() => invoices.id, { onDelete: 'set null' }),
+  productId: integer('product_id').references(() => products.id, { onDelete: 'set null' }),
   quantity: integer('quantity').notNull(),
   price: decimal('price', { precision: 10, scale: 2 }).notNull(),
   discount: decimal('discount', { precision: 5, scale: 2 }).default('0'),
