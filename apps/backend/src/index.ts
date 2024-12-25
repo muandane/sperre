@@ -1,14 +1,14 @@
 import { t, Elysia } from 'elysia';
 import { cors } from '@elysiajs/cors';
 import { db } from './db';
-import { invoices } from './db/schema';
+import { invoices, products } from './db/schema';
 import { eq } from 'drizzle-orm';
 import { swagger } from '@elysiajs/swagger';
-import { InvoiceBodySchema, type InvoiceBody, type UpdateInvoiceBody, convertToDBType} from './types';
+import { InvoiceBodySchema , type UpdateInvoiceBody, convertToDBType, type InvoiceBody} from './types';
+import { createInvoiceWithProducts } from './handler/transactions';
 
 const app = new Elysia()
   .use(cors())
-  .get('/', () => 'Invoice API is running')
   .use(swagger({
     documentation: {
       info: {
@@ -18,25 +18,65 @@ const app = new Elysia()
       }
     }
   }))
-  // Create new invoice
-  .post('/invoices', async ({ body }: { body: InvoiceBody }) => {
+  
+  // Create new product
+  .post('/products', async ({ body }: { body: {
+    name: string;
+    description?: string;
+    price: number;
+    quantity: number;
+  } }) => {
     try {
-      const invoiceData = {
-        ...body,
-        amount: body.amount.toString(), // Convert number to string for database
-        dueDate: new Date(body.dueDate), // Convert string to Date
-      };
-      const newInvoice = await db.insert(invoices).values(invoiceData).returning();
-      return { success: true, data: newInvoice[0] };
+      const { name, description, price, quantity } = body;
+      const createdProduct = await db.insert(products).values({
+        name: name.toString(),
+        description,
+        price,
+        quantity
+      }).returning();
+      return { success: true, data: createdProduct[0] };
     } catch (error) {
       return { success: false, error: error.message };
     }
-  },{
-    body: InvoiceBodySchema,
+  }, {
+    body: t.Object({
+      name: t.String({
+        description: 'Product name',
+        example: 'Product 1'
+      }),
+      description: t.Optional(t.String({
+        description: 'Product description',
+        example: 'This is a product description'
+      })),
+      price: t.Number({
+        description: 'Product price',
+        example: 10.99
+      }),
+      quantity: t.Number({
+        description: 'Product quantity',
+        example: 10
+      })
+    }),
     detail: {
-      summary: 'Create a new invoice',
-      tags: ['Invoices']
+      summary: 'Create product',
+      tags: ['Products']
     }
+  })
+  // Create new invoice
+  .post('/invoices', async ({ body }: { body: InvoiceBody }) => {
+    try {
+      const { items, ...invoiceData } = body;
+      const invoice = await createInvoiceWithProducts(invoiceData, items);
+      return { success: true, data: invoice };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }, {
+      body: InvoiceBodySchema,
+      detail: {
+        summary: 'Create invoice with products',
+        tags: ['Invoices']
+      }
   })
   
   // Get all invoices

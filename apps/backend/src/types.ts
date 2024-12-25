@@ -1,39 +1,66 @@
 import { t } from 'elysia';
 
+export const InvoiceProductSchema = t.Object({
+  productId: t.Number({
+    description: 'Product ID',
+    example: 1
+  }),
+  quantity: t.Number({
+    description: 'Product quantity',
+    example: 2
+  }),
+  price: t.Optional(t.Number({
+    description: 'Product price',
+    format: 'decimal',
+    example: 10.99
+  })),
+  discount: t.Optional(t.Number({
+    description: 'Product discount percentage',
+    format: 'decimal',
+    example: 10.5
+  })),
+  name: t.Optional(t.String({
+    description: 'Product name',
+    example: 'Product 1'
+  }))
+});
+
 export const InvoiceBodySchema = t.Object({
   invoiceNumber: t.String({
-    description: 'Unique invoice identifier',
-    example: 'INV-2024-001'
+    description: 'Invoice number',
+    format: 'uuid',
+    example: 'f81d4fae-7dec-11d0-a765-00a0c91e6bf6'
   }),
   clientName: t.String({
-    description: 'Name of the client',
+    description: 'Client name',
     example: 'John Doe'
   }),
   clientEmail: t.String({
+    description: 'Client email',
     format: 'email',
-    description: 'Email address of the client',
-    example: 'john@example.com'
+    example: 'john.doe@example.com'
   }),
   amount: t.Number({
-    description: 'Total amount of the invoice',
-    example: 1299.99
+    description: 'Invoice amount',
+    example: 100.99
   }),
   status: t.Optional(t.String({
-    description: 'Current status of the invoice',
-    example: 'pending',
-    default: 'pending'
+    description: 'Invoice status',
+    enum: ['pending', 'paid', 'canceled'],
+    example: 'pending'
   })),
   dueDate: t.String({
+    description: 'Due date',
     format: 'date-time',
-    description: 'Due date for the invoice',
-    example: '2024-01-20T00:00:00.000Z'
+    example: '2023-03-15T00:00:00.000Z'
   }),
-  items: t.Array(t.String(), {
-    description: 'List of invoice items',
-    example: ['Website Design - $800', 'Logo Design - $499.99']
-  })
+  items: t.Array(InvoiceProductSchema)
 });
 
+export const CreateInvoiceSchema = t.Object({
+  ...InvoiceBodySchema.properties,
+  products: t.Array(InvoiceProductSchema)
+});
 export type InvoiceBody = {
   invoiceNumber: string;
   clientName: string;
@@ -41,7 +68,28 @@ export type InvoiceBody = {
   amount: number;
   status?: string;
   dueDate: string;
-  items: string[];
+  items: {
+    productId: number;
+    quantity: number;
+    price?: number;
+    discount?: number;
+    name?: string;
+  }[];
+};
+export type CreateInvoiceBody = {
+  invoiceNumber: string;
+  clientName: string;
+  clientEmail: string;
+  amount: number;
+  status?: string;
+  dueDate: string;
+  products: {
+    productId: number;
+    quantity: number;
+    price?: number;
+    discount?: number;
+    name?: string;
+  }[];
 };
 
 export type UpdateInvoiceBody = Partial<InvoiceBody>;
