@@ -1,19 +1,36 @@
 import { pgTable, serial, varchar, decimal, timestamp, text, integer } from 'drizzle-orm/pg-core';
 
-export const roles = pgTable('roles', {
-  id: serial('id').primaryKey(),
-  name: varchar('name', { length: 50 }).notNull(),
-  description: text('description'),
-  createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow()
-});
-
 export const permissions = pgTable('permissions', {
   id: serial('id').primaryKey(),
-  name: varchar('name', { length: 50 }).notNull(),
+  name: varchar('name', { length: 50 }).unique().notNull(),
+  description: text('description'),
   type: varchar('type', { length: 10 }).notNull().default('allow'),
   createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow()
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+
+export const roles = pgTable('roles', {
+  id: serial('id').primaryKey(),
+  name: varchar('name', { length: 50 }).unique().notNull(),
+  description: text('description'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+export const rolePermissions = pgTable('role_permissions', {
+  id: serial('id').primaryKey(),
+  roleId: integer('role_id').references(() => roles.id).notNull(),
+  permissionId: integer('permission_id').references(() => permissions.id).notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+
+export const userRoles = pgTable('user_roles', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').references(() => users.id).notNull(),
+  roleId: integer('role_id').references(() => roles.id).notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
 });
 
 export const users = pgTable('users', {
@@ -22,9 +39,8 @@ export const users = pgTable('users', {
   email: varchar('email', { length: 255 }).notNull().unique(),
   avatar: text('avatar'),
   password: text('password').notNull(),
-  roleId: integer('role_id').references(() => roles.id),
   createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow()
+  updatedAt: timestamp('updated_at').defaultNow(),
 });
 
 export const clients = pgTable('clients', {
@@ -36,6 +52,7 @@ export const clients = pgTable('clients', {
   ai: varchar('ai', { length: 50 }),
   rc: varchar('rc', { length: 50 }),
   rib: varchar('rib', { length: 50 }),
+  organizationId: integer('organization_id').references(() => organization.id),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow()
 });
@@ -46,6 +63,7 @@ export const products = pgTable('products', {
   description: text('description'),
   price: decimal('price', { precision: 10, scale: 2 }).notNull(),
   quantity: integer('quantity').notNull(),
+  organizationId: integer('organization_id').references(() => organization.id),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow()
 });
@@ -54,6 +72,7 @@ export const invoices = pgTable('invoices', {
   id: serial('id').primaryKey(),
   invoiceNumber: varchar('invoice_number', { length: 50 }).notNull(),
   clientId: integer('client_id').references(() => clients.id),
+  organizationId: integer('organization_id').references(() => organization.id), 
   description: text('description'),
   periodStart: timestamp('period_start'),
   periodEnd: timestamp('period_end'),
@@ -69,12 +88,8 @@ export const invoices = pgTable('invoices', {
 
 export const invoiceProducts = pgTable('invoice_products', {
   id: serial('id').primaryKey(),
-  invoiceId: integer('invoice_id')
-    .notNull()
-    .references(() => invoices.id),
-  productId: integer('product_id')
-    .notNull()
-    .references(() => products.id),
+  invoiceId: integer('invoice_id').notNull().references(() => invoices.id),
+  productId: integer('product_id').notNull().references(() => products.id),
   quantity: integer('quantity').notNull(),
   price: decimal('price', { precision: 10, scale: 2 }).notNull(),
   discount: decimal('discount', { precision: 5, scale: 2 }).default('0'),
@@ -86,6 +101,7 @@ export const invoiceProducts = pgTable('invoice_products', {
 export const organization = pgTable('organization', {
   id: serial('id').primaryKey(),
   name: varchar('name', { length: 255 }).notNull(),
+  description: text('description'),
   address: text('address'),
   nif: varchar('nif', { length: 50 }),
   nis: varchar('nis', { length: 50 }),
@@ -98,4 +114,11 @@ export const organization = pgTable('organization', {
   receiptSequence: integer('receipt_sequence').default(0),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow()
+});
+
+export const userOrganizations = pgTable('user_organizations', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').references(() => users.id).notNull(),
+  organizationId: integer('organization_id').references(() => organization.id).notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
 });
