@@ -30,8 +30,8 @@ const app = new Elysia()
       const { name, description, price, quantity } = body;
       const createdProduct = await db.insert(products).values({
         name: name.toString(),
-        description,
-        price,
+        description: description,
+        price: price.toString(),
         quantity
       }).returning();
       return { success: true, data: createdProduct[0] };
