@@ -7,6 +7,7 @@ import {
 	text,
 	integer,
 } from "drizzle-orm/pg-core";
+import { user } from "@/db/schema/auth";
 
 export const permissions = pgTable("permissions", {
 	id: serial("id").primaryKey(),
@@ -38,23 +39,13 @@ export const rolePermissions = pgTable("role_permissions", {
 
 export const userRoles = pgTable("user_roles", {
 	id: serial("id").primaryKey(),
-	userId: integer("user_id")
-		.references(() => users.id)
+	userId: text("user_id")
+		.references(() => user.id)
 		.notNull(),
 	roleId: integer("role_id")
 		.references(() => roles.id)
 		.notNull(),
 	createdAt: timestamp("created_at").defaultNow(),
-});
-
-export const users = pgTable("users", {
-	id: serial("id").primaryKey(),
-	name: varchar("name", { length: 255 }).notNull(),
-	email: varchar("email", { length: 255 }).notNull().unique(),
-	avatar: text("avatar"),
-	password: text("password").notNull(),
-	createdAt: timestamp("created_at").defaultNow(),
-	updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const clients = pgTable("clients", {
@@ -136,8 +127,8 @@ export const organization = pgTable("organization", {
 
 export const userOrganizations = pgTable("user_organizations", {
 	id: serial("id").primaryKey(),
-	userId: integer("user_id")
-		.references(() => users.id)
+	userId: text("user_id")
+		.references(() => user.id)
 		.notNull(),
 	organizationId: integer("organization_id")
 		.references(() => organization.id)
