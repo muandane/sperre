@@ -16,12 +16,17 @@ export const auth = betterAuth({
 	emailAndPassword: {
 		enabled: true,
 	},
+	trustedOrigins: [process.env.BASE_URL as string, process.env.APP_URL as string],
 	socialProviders: {
 		google: {
-			// biome-ignore lint/style/noNonNullAssertion: <explanation>
-			clientId: process.env.GOOGLE_CLIENT_ID!,
-			// biome-ignore lint/style/noNonNullAssertion: <explanation>
-			clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+			clientId: process.env.GOOGLE_CLIENT_ID as string,
+			clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+			redirectURI: `${process.env.BASE_URL}/api/auth/callback/google`,
 		},
+		github: {
+			clientId: process.env.GITHUB_CLIENT_ID as string,
+			clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+			redirectURI: `${process.env.BASE_URL}/api/auth/callback/github`,
+		}
 	},
 });
