@@ -4,11 +4,16 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { signIn } from "@/lib/auth-client"
+import { PasswordInput } from "../ui/password-input"
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  function setError(arg0: string) {
+    throw new Error("Function not implemented.")
+  }
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden">
@@ -27,11 +32,15 @@ export function LoginForm({
                 e.preventDefault();
                 const emailInput = document.getElementById("email") as HTMLInputElement;
                 const passwordInput = document.getElementById("password") as HTMLInputElement;
-
-                await signIn.email({
-                  email: emailInput.value,
-                  password: passwordInput.value,
-                });
+                try {
+                  await signIn.email({
+                    email: emailInput.value,
+                    password: passwordInput.value,
+                  })
+                  window.location.href = "/"
+                } catch (error) {
+                  setError(String(error))
+                }
               }}>
                 <div className="flex flex-col gap-6">
                   <div className="grid gap-2">
@@ -53,7 +62,13 @@ export function LoginForm({
                         Forgot your password?
                       </a>
                     </div>
-                    <Input id="password" type="password" required />
+                    <PasswordInput 
+                      id="password" 
+                      type="password"
+                      placeholder="******"
+                      autoComplete="new-password"
+                      required
+                    />
                   </div>
                   <Button type="submit" className="w-full">
                     Login
@@ -116,7 +131,7 @@ export function LoginForm({
               </div>
               <div className="text-center text-sm">
                 Don&apos;t have an account?{" "}
-                <a href="#" className="underline underline-offset-4">
+                <a href="/signup" className="underline underline-offset-4">
                   Sign up
                 </a>
               </div>

@@ -15,6 +15,22 @@ export const auth = betterAuth({
 	}),
 	emailAndPassword: {
 		enabled: true,
+		// ? implement sendEmail function
+		// requireEmailVerification: true,
+    // sendVerificationEmail: async ( { user, url, token }, request) => {
+    //   await sendEmail({
+    //     to: user.email,
+    //     subject: "Verify your email address",
+    //     text: `Click the link to verify your email: ${url}`,
+    //   });
+    // },
+		// sendResetPassword: async ({user,url,token}) => {
+		// 	await sendEmail({
+    //     to: user.email,
+    //     subject: "Reset your password",
+    //     text: `Click the link to reset your password: ${url}`,
+    //   });
+		// }
 	},
 	trustedOrigins: [process.env.BASE_URL as string, process.env.APP_URL as string],
 	socialProviders: {
