@@ -1,4 +1,5 @@
 .env
 *.env
 drizzle/
+**/drizzle/
 node_modules
