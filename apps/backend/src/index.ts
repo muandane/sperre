@@ -3,7 +3,6 @@ import { cors } from "@elysiajs/cors";
 import { swagger } from "@elysiajs/swagger";
 import { invoiceRoutes } from "./routes/invoices.routes";
 import { productsRoutes } from "./routes/products.routes";
-import { logger } from "@bogeychan/elysia-logger";
 import betterAuthView from "@/libs/auth/auth-view";
 import { userMiddleware } from "./middlewares/auth-middleware";
 
@@ -13,16 +12,6 @@ const app = new Elysia()
     methods: ['GET', 'POST', 'OPTIONS'],
     credentials: true
   }))
-	// .use(
-	// 	logger({
-	// 		transport: {
-	// 			target: "pino-pretty",
-	// 			options: {
-	// 				colorize: true,
-	// 			},
-	// 		},
-	// 	}),
-	// )
 	.use(
 		swagger({
 			documentation: {
