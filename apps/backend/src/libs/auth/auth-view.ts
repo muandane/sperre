@@ -3,38 +3,30 @@ import { auth } from "./auth";
 
 const betterAuthView = async (context: Context) => {
   const BETTER_AUTH_ACCEPT_METHODS = ["POST", "GET", "OPTIONS"];
-  const { method, url} = context.request;
 
-  // Log the incoming request details
-  console.log(`[betterAuthView] Incoming request: ${method} ${url}`);
-
-  if (BETTER_AUTH_ACCEPT_METHODS.includes(method)) {
-    const clonedRequest = context.request.clone();
-
+  // console.log(`[betterAuthView] Incoming request: ${context.request.method} ${context.request.url}`);
+  if (BETTER_AUTH_ACCEPT_METHODS.includes(context.request.method)) {
+    const requestClone = context.request.clone();
     try {
-      const body = await clonedRequest.json();
-      console.log(`[betterAuthView] Request body: ${JSON.stringify(body)}`);
-
-      const newRequest = new Request(clonedRequest.url, {
-        method: clonedRequest.method,
-        headers: clonedRequest.headers,
-        body: JSON.stringify(body),
+      const requestBody = await requestClone.json();
+      // console.log(`[betterAuthView] Request body: ${JSON.stringify(requestBody)}`);
+      const newRequest = new Request(requestClone.url, {
+        method: requestClone.method,
+        headers: requestClone.headers,
+        body: JSON.stringify(requestBody),
       });
-
       return auth.handler(newRequest);
     } catch (error) {
       if (error.name === "SyntaxError" && error.message.includes("Unexpected end of JSON input")) {
-        console.warn(`[betterAuthView] Ignoring SyntaxError: ${error.message}`);
-        return auth.handler(clonedRequest);
+        // console.warn(`[betterAuthView] Ignoring SyntaxError: ${error.message}`);
+        return auth.handler(requestClone);
       }
-
-      console.error(`[betterAuthView] Error parsing JSON body: ${error.message}`);
+      // console.error(`Error parsing JSON body: ${error.message}`);
       context.error(400, "Invalid JSON body");
       return;
     }
   }
-
-  console.warn(`[betterAuthView] Method not allowed: ${method}`);
+  // console.warn(`[betterAuthView] Method not allowed: ${method}`);
   context.error(405, "Method Not Allowed");
 };
 

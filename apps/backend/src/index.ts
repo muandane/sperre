@@ -4,12 +4,11 @@ import { swagger } from "@elysiajs/swagger";
 import { invoiceRoutes } from "./routes/invoices.routes";
 import { productsRoutes } from "./routes/products.routes";
 import betterAuthView from "@/libs/auth/auth-view";
-import { userMiddleware } from "./middlewares/auth-middleware";
+import { userMiddleware } from "@/libs/auth/auth-middleware";
 
 const app = new Elysia()
 	.use(cors({
     origin: ['http://localhost:4321'],
-    methods: ['GET', 'POST', 'OPTIONS'],
     credentials: true
   }))
 	.use(
@@ -23,8 +22,8 @@ const app = new Elysia()
 			},
 		}),
 	)
-	.derive(userMiddleware)
 	.all("/api/auth/*", betterAuthView)
+	.use(userMiddleware)
 	.use(invoiceRoutes)
 	.use(productsRoutes)
 	.listen(3000);

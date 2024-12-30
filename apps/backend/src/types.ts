@@ -75,6 +75,7 @@ export type InvoiceBody = {
 	clientEmail: string;
 	amount: number;
 	status?: string;
+	organizationId: number;
 	dueDate: string;
 	items: {
 		productId: number;
