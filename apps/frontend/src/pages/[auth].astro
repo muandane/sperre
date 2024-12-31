@@ -1,0 +1,20 @@
+---
+import Layout from "@/layouts/AuthLayout.astro";
+import { LoginForm } from "@/components/auth/login-form"
+import { RegistrationForm } from "@/components/auth/reg-form";
+
+export function getStaticPaths() {
+  return [
+    { params: { auth: 'signin' } },
+    { params: { auth: 'signup' } },
+  ];
+}
+const { auth } = Astro.params;
+---
+
+<Layout title={auth === 'signin' ? 'Sign In' : 'Sign Up'}>
+  {auth === 'signin' 
+    ? <LoginForm client:load /> 
+    : <RegistrationForm client:load />
+  }
+</Layout>
