@@ -3,7 +3,9 @@ import {
 	text,
 	timestamp,
 	boolean,
+	integer,
 } from "drizzle-orm/pg-core";
+import { organization } from "./invoice";
 
 export const user = pgTable("user", {
 	id: text("id").primaryKey(),
@@ -23,6 +25,7 @@ export const session = pgTable("session", {
 	updatedAt: timestamp("updatedAt").notNull(),
 	ipAddress: text("ipAddress"),
 	userAgent: text("userAgent"),
+	organizationId: integer("organizationId").references(() => organization.id),
 	userId: text("userId")
 		.notNull()
 		.references(() => user.id),

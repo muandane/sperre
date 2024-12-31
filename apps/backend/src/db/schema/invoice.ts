@@ -77,6 +77,7 @@ export const invoices = pgTable("invoices", {
 	id: serial("id").primaryKey(),
 	invoiceNumber: varchar("invoice_number", { length: 50 }).notNull(),
 	clientId: integer("client_id").references(() => clients.id),
+	userId: text("user_id").references(() => user.id),
 	organizationId: integer("organization_id").references(() => organization.id),
 	description: text("description"),
 	periodStart: timestamp("period_start"),

@@ -52,14 +52,21 @@ export const invoiceRoutes = new Elysia()
         // Get user's organizations
         const userOrgs = await db
           .select({ organizationId: userOrganizations.organizationId })
-          .from(userOrganizations);
-          // .where(eq(userOrganizations.userId, user.id));
+          .from(userOrganizations)
+          .where(eq(userOrganizations.userId, bearer.userId));
 
         const orgIds = userOrgs.map(org => org.organizationId);
 
         // Get invoices for user's organizations
         const userInvoices = await db
-          .select()
+          .select({
+            id: invoices.id,
+            invoiceNumber: invoices.invoiceNumber,
+            organizationId: invoices.organizationId,
+            status: invoices.status,
+            createdAt: invoices.createdAt,
+            updatedAt: invoices.updatedAt,
+          })
           .from(invoices)
           .where(inArray(invoices.organizationId, orgIds));
         console.log(userInvoices);
