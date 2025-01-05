@@ -5,10 +5,12 @@ import { invoiceRoutes } from "./routes/invoices.routes";
 import { productsRoutes } from "./routes/products.routes";
 import betterAuthView from "@/libs/auth/auth-view";
 import { userMiddleware } from "@/libs/auth/auth-middleware";
+import { config } from "./config/config";
 
 const app = new Elysia()
+	.derive(({ request }) => userMiddleware(request))
 	.use(cors({
-    origin: ['http://localhost:4321'],
+    origin: config.corsOrigins,
     credentials: true
   }))
 	.use(
@@ -23,7 +25,6 @@ const app = new Elysia()
 		}),
 	)
 	.all("/api/auth/*", betterAuthView)
-	.use(userMiddleware)
 	.use(invoiceRoutes)
 	.use(productsRoutes)
 	.listen(3000);
