@@ -31,7 +31,7 @@ export const session = pgTable("session", {
   updatedAt: timestamp("updatedAt", { mode: "date" }).notNull().defaultNow(),
   ipAddress: varchar("ipAddress", { length: 45 }),
   userAgent: varchar("userAgent", { length: 255 }),
-  organizationId: integer("organizationId").references(() => organization.id, { 
+  organizationId: text("organizationId").references(() => organization.id, { 
     onDelete: "cascade" 
   }),
   userId: text("userId")

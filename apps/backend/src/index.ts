@@ -8,11 +8,11 @@ import { userMiddleware } from "@/libs/auth/auth-middleware";
 import { config } from "./config/config";
 
 const app = new Elysia()
-	.derive(({ request }) => userMiddleware(request))
 	.use(cors({
     origin: config.corsOrigins,
     credentials: true
   }))
+	.derive(({ request }) => userMiddleware(request))
 	.use(
 		swagger({
 			documentation: {

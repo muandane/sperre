@@ -62,13 +62,12 @@ export default function InvoiceTable() {
 
       // Include userId as a query parameter
       const response = await fetch(
-        `${import.meta.env.PUBLIC_API_URL}/invoices`, 
-        {
+        `${import.meta.env.PUBLIC_API_URL}/invoices`, {
           headers: {
-            'Authorization': `Bearer ${session.token}`,
-            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session?.token || ''}`,
+            'X-Session-ID': session?.id,
           },
-          method: 'GET',
+          credentials: 'include',
         }
       );
 

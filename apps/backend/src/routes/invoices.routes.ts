@@ -6,17 +6,19 @@ import { eq, and, inArray } from "drizzle-orm";
 import {
   InvoiceBodySchema,
 } from "@/types/invoiceBody";
+import type { Session } from "@/types/authType";
 import {   
   type InvoiceBody,
   type UpdateInvoiceBody,
   convertToDBType,
 } from "@/types/invoiceType";
 import { createInvoiceWithProducts } from "@/handler/transactions";
+import { userMiddleware } from "@/libs/auth/auth-middleware";
 
 export const invoiceRoutes = new Elysia()
   .post(
     "/invoices",
-    async ({ body, session }) => {
+    async ({ body, session }: { body: InvoiceBody; session: Session }) => {
       try {
         // Get user's organizations
         const userOrgs = session.organizationId;
@@ -28,7 +30,7 @@ export const invoiceRoutes = new Elysia()
         const { items, ...invoiceData } = body;
         
         // Verify invoice belongs to user's organization
-        if (!userOrgs.some(org => org.organizationId === invoiceData.organizationId)) {
+        if (!userOrgs.includes(invoiceData.organizationId)) {
           return { success: false, error: "Unauthorized to create invoice for this organization" };
         }
 
@@ -45,10 +47,17 @@ export const invoiceRoutes = new Elysia()
   )
   .get(
     "/invoices",
-    async ({ session }) => {
+    async ({ session }: { session: Session }) => {
       try {
-
+        console.log("Session details:", session);
         // Get invoices for user's organizations
+        const userOrgs = await db
+          .select({ organizationId: userOrganizations.organizationId })
+          .from(userOrganizations)
+          .where(eq(userOrganizations.userId, session.userId));
+
+        const orgIds = userOrgs.map(({ organizationId }) => organizationId);
+
         const userInvoices = await db
           .select({
             id: invoices.id,
@@ -59,7 +68,7 @@ export const invoiceRoutes = new Elysia()
             updatedAt: invoices.updatedAt,
           })
           .from(invoices)
-          .where(inArray(invoices.organizationId, session.organizationId));
+          .where(inArray(invoices.organizationId, orgIds.map(Number)));
         console.log(userInvoices);
         return { success: true, data: userInvoices };
       } catch (error) {
@@ -71,7 +80,7 @@ export const invoiceRoutes = new Elysia()
   )
   .get(
     "/invoices/:id",
-    async ({ params: { id }, session }) => {
+    async ({ params: { id }, session }: { params: { id: string }; session: Session }) => {
       try {
         const orgIds = session.organizationId;
 
@@ -82,7 +91,7 @@ export const invoiceRoutes = new Elysia()
           .where(
             and(
               eq(invoices.id, Number.parseInt(id)),
-              inArray(invoices.organizationId, orgIds)
+              inArray(invoices.organizationId, orgIds.map(Number))
             )
           )
           .limit(1);

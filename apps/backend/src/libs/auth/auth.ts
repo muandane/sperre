@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "@/db"; // Ensure this is your database instance
 import { account, session, user, verification } from "@/db/schema/auth";
+import { passkey } from "better-auth/plugins/passkey";
 
 export const auth = betterAuth({
 	database: drizzleAdapter(db, {
@@ -13,8 +14,20 @@ export const auth = betterAuth({
 			account,
 		},
 	}),
+	account: {
+		accountLinking: {
+			enabled: true,
+			trustedProviders: ["google"],
+		},
+	},
+	rateLimit: {
+		enabled: true,
+	},
+	plugins: [
+		passkey(),
+	],
 	session: {
-			expiresIn: 60 * 60 * 24 * 7, // 7 days
+		expiresIn: 60 * 60 * 24 * 7, // 7 days
 		updateAge: 60 * 60 * 24 // 1 day (every 1 day the session expiration is updated)
 	},
 	emailAndPassword: {
