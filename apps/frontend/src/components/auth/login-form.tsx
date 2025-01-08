@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { signIn } from "@/lib/auth-client"
 import { PasswordInput } from "../ui/password-input"
-
+import { ModeToggle } from "@/components/ModeToggle";
 export function LoginForm({
   className,
   ...props
@@ -16,6 +16,7 @@ export function LoginForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
+      <ModeToggle />
       <Card className="overflow-hidden">
         <CardContent className="grid p-0 md:grid-cols-2">
           <div className="p-6 md:p-8">
@@ -86,7 +87,7 @@ export function LoginForm({
                 <Button
                   type="button"
                   variant="outline"
-                  className="w-full"
+                  className="w-full ring-1 ring-emerald-400 hover:ring-emerald-600 transition-ring duration-300"
                   onClick={() => signIn.social({ provider: "microsoft" })}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -98,7 +99,7 @@ export function LoginForm({
                 <Button
                   type="button"
                   variant="outline"
-                  className="w-full"
+                  className="w-full ring-1 ring-emerald-400 hover:ring-emerald-600 transition-ring duration-300"
                   onClick={() => signIn.social({ provider: "google" })}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -113,7 +114,7 @@ export function LoginForm({
                 <Button
                   type="button"
                   variant="outline"
-                  className="w-full"
+                  className="w-full ring-1 ring-emerald-400 hover:ring-emerald-600 transition-ring duration-300"
                   onClick={() => signIn.social({ provider: "github" })}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 438.549 438.549">

@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label"
 import { signIn, signUp } from "@/lib/auth-client"
 import { PhoneInput } from '@/components/ui/phone-input'
 import { PasswordInput } from "@/components/ui/password-input"
+import { ModeToggle } from "@/components/ModeToggle"
 export function RegistrationForm({
   className,
   ...props
@@ -15,6 +16,7 @@ export function RegistrationForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
+      <ModeToggle />
       <Card className="overflow-hidden">
         <CardContent className="grid p-0 md:grid-cols-2">
           <div className="p-6 md:p-8">
