@@ -30,7 +30,7 @@ export const invoiceRoutes = new Elysia()
         const { items, ...invoiceData } = body;
         
         // Verify invoice belongs to user's organization
-        if (!userOrgs.includes(invoiceData.organizationId.toString())) {
+        if (!userOrgs.includes(Number(invoiceData.organizationId))) {
           return { success: false, error: "Unauthorized to create invoice for this organization" };
         }
 
