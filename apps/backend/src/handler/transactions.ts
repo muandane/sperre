@@ -1,7 +1,8 @@
 import { db } from "../db";
-import { invoices, invoiceProducts, products } from "@/db/schema/invoice";
+import { invoices, invoiceProducts } from "@/db/schema/invoice";
+import { products } from "@/db/schema/products";
 import { eq } from "drizzle-orm";
-import type { InvoiceBody } from "../types";
+import type { InvoiceBody } from "../types/invoiceType";
 
 interface InvoiceProduct {
 	productId: number;
@@ -18,7 +19,7 @@ export async function createInvoiceWithProducts(
 	return await db.transaction(async (transaction) => {
 		const [createdInvoice] = await transaction
 			.insert(invoices)
-			.values({ ...invoiceData, total: "0" })
+			.values({ ...invoiceData, organizationId: Number(invoiceData.organizationId) })
 			.returning();
 
 		let totalAmount = 0;

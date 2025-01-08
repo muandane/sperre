@@ -16,6 +16,9 @@ export const user = pgTable("user", {
   email: text("email").notNull().unique(),
   emailVerified: boolean("emailVerified").notNull().default(false),
   image: text("image"),
+  organizationId: text("organizationId").references(() => organization.id, { 
+    onDelete: "cascade" 
+  }),
   createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
   updatedAt: timestamp("updatedAt", { mode: "date" }).notNull().defaultNow(),
 }, (table) => [{
@@ -31,16 +34,12 @@ export const session = pgTable("session", {
   updatedAt: timestamp("updatedAt", { mode: "date" }).notNull().defaultNow(),
   ipAddress: varchar("ipAddress", { length: 45 }),
   userAgent: varchar("userAgent", { length: 255 }),
-  organizationId: text("organizationId").references(() => organization.id, { 
-    onDelete: "cascade" 
-  }),
   userId: text("userId")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
 }, (table) => [{
   tokenIdx: uniqueIndex("session_token_idx").on(table.token),
   userIdIdx: index("session_user_id_idx").on(table.userId),
-  organizationIdIdx: index("session_organization_id_idx").on(table.organizationId),
   expiresAtIdx: index("session_expires_at_idx").on(table.expiresAt),
 }]);
 

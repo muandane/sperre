@@ -1,9 +1,9 @@
 import { t } from "elysia";
 
 export const InvoiceProductSchema = t.Object({
-	productId: t.Number({
+	productId: t.Integer({
 		description: "Product ID",
-		example: 1,
+		example: 2,
 	}),
 	quantity: t.Number({
 		description: "Product quantity",

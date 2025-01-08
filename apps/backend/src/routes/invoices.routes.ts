@@ -6,14 +6,14 @@ import { eq, and, inArray } from "drizzle-orm";
 import {
   InvoiceBodySchema,
 } from "@/types/invoiceBody";
-import type { Session } from "@/types/authType";
+import type { Session } from "better-auth/types";
 import {   
   type InvoiceBody,
   type UpdateInvoiceBody,
   convertToDBType,
 } from "@/types/invoiceType";
 import { createInvoiceWithProducts } from "@/handler/transactions";
-import { userMiddleware } from "@/libs/auth/auth-middleware";
+import { getOrgIds } from "@/utils/helper/getOrgId";
 
 export const invoiceRoutes = new Elysia()
   .post(
@@ -21,7 +21,7 @@ export const invoiceRoutes = new Elysia()
     async ({ body, session }: { body: InvoiceBody; session: Session }) => {
       try {
         // Get user's organizations
-        const userOrgs = session.organizationId;
+        const userOrgs = await getOrgIds(session);
 
         if (!userOrgs.length) {
           return { success: false, error: "User not associated with any organization" };
@@ -30,7 +30,7 @@ export const invoiceRoutes = new Elysia()
         const { items, ...invoiceData } = body;
         
         // Verify invoice belongs to user's organization
-        if (!userOrgs.includes(invoiceData.organizationId)) {
+        if (!userOrgs.includes(invoiceData.organizationId.toString())) {
           return { success: false, error: "Unauthorized to create invoice for this organization" };
         }
 
@@ -82,7 +82,7 @@ export const invoiceRoutes = new Elysia()
     "/invoices/:id",
     async ({ params: { id }, session }: { params: { id: string }; session: Session }) => {
       try {
-        const orgIds = session.organizationId;
+        const orgIds = await getOrgIds(session);
 
         // Get invoice if it belongs to user's organization
         const invoice = await db
@@ -121,16 +121,11 @@ export const invoiceRoutes = new Elysia()
     }: {
       params: { id: string };
       body: UpdateInvoiceBody;
-      session: { userId: string };
+      session: Session;
     }) => {
       try {
-        // Get user's organizations
-        const userOrgs = await db
-          .select({ organizationId: userOrganizations.organizationId })
-          .from(userOrganizations)
-          .where(eq(userOrganizations.userId, session.userId));
 
-        const orgIds = userOrgs.map(org => org.organizationId);
+        const orgIds = await getOrgIds(session);
 
         const updateData = { ...convertToDBType(body), updatedAt: new Date() };
 
@@ -140,7 +135,7 @@ export const invoiceRoutes = new Elysia()
           .where(
             and(
               eq(invoices.id, Number.parseInt(id)),
-              inArray(invoices.organizationId, orgIds)
+              inArray(invoices.organizationId, orgIds.map(Number))
             )
           )
           .returning();
@@ -179,7 +174,7 @@ export const invoiceRoutes = new Elysia()
           .where(
             and(
               eq(invoices.id, Number.parseInt(id)),
-              inArray(invoices.organizationId, orgIds)
+              inArray(invoices.organizationId, orgIds.map(Number))
             )
           )
           .returning();

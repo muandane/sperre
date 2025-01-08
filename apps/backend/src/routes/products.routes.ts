@@ -1,7 +1,7 @@
 import { Elysia, t } from "elysia";
 import { db } from "@/db";
 import { eq } from "drizzle-orm";
-import { products } from "@/db/schema/invoice";
+import { products } from "@/db/schema/products";
 
 export const productsRoutes = new Elysia()
 	.post(
@@ -25,6 +25,7 @@ export const productsRoutes = new Elysia()
 						description,
 						price: price.toString(),
 						quantity,
+						organizationId: 1,
 					})
 					.returning();
 				return { success: true, data: createdProduct[0] };
