@@ -31,7 +31,7 @@ export const userOrganizations = pgTable("user_organizations", {
   userId: text("user_id")
     .references(() => user.id, { onDelete: "cascade" })
     .notNull(),
-  organizationId: text("organization_id")
+  organizationId: integer("organization_id")
     .references(() => organization.id, { onDelete: "cascade" })
     .notNull(),
   createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
@@ -60,7 +60,7 @@ export const clientOrganizations = pgTable("client_organizations", {
   clientId: integer("client_id")
     .notNull()
     .references(() => clients.id, { onDelete: "cascade" }),
-  organizationId: text("organization_id")
+  organizationId: integer("organization_id")
     .notNull()
     .references(() => organization.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),

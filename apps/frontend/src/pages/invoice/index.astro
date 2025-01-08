@@ -1,7 +1,13 @@
 ---
 import InvoiceTable from "@/components/invoice/invoice-table";
 import Layout from "@/layouts/DashboardLayout.astro";
+const session = () => {
+  if (Astro.locals.session) {
+      return Astro.locals.session;
+  }
+  return Astro.redirect("/signin");
+}
 ---
 <Layout title="Login Page">
-  <InvoiceTable client:load />
+  {session() ? <InvoiceTable client:load /> : Astro.redirect("/signin")}
 </Layout>
