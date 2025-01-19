@@ -3,7 +3,7 @@ import { user } from "@/db/schema/auth";
 
 export const organization = pgTable("organization", {
   id: serial("id").primaryKey(),
-  name: varchar("name", { length: 255 }).notNull(),
+  name: text("name").notNull(),
   description: text("description"),
   address: text("address"),
   nif: varchar("nif", { length: 50 }).unique(),
@@ -42,7 +42,7 @@ export const userOrganizations = pgTable("user_organizations", {
 
 export const clients = pgTable("clients", {
   id: serial("id").primaryKey(),
-  name: varchar("name", { length: 255 }).notNull(),
+  name: text("name").notNull(),
   address: text("address"),
   nis: varchar("nis", { length: 50 }),
   nif: varchar("nif", { length: 50 }),

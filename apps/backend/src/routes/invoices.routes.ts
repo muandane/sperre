@@ -15,7 +15,7 @@ import {
 import { createInvoiceWithProducts } from "@/handler/transactions";
 import { getOrgIds } from "@/utils/helper/getOrgId";
 
-export const invoiceRoutes = new Elysia()
+export const invoiceRoutes = new Elysia({ name: "invoices" })
   .post(
     "/invoices",
     async ({ body, session }: { body: InvoiceBody; session: Session }) => {

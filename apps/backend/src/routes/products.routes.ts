@@ -3,7 +3,7 @@ import { db } from "@/db";
 import { eq } from "drizzle-orm";
 import { products } from "@/db/schema/products";
 
-export const productsRoutes = new Elysia()
+export const productsRoutes = new Elysia({ name: "products" })
 	.post(
 		"/products",
 		async ({

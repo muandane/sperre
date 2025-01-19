@@ -88,7 +88,10 @@ export function LoginForm({
                   type="button"
                   variant="outline"
                   className="w-full ring-1 ring-emerald-400 hover:ring-emerald-600 transition-ring duration-300"
-                  onClick={() => signIn.social({ provider: "microsoft" })}
+                  onClick={() => signIn.social({
+                    provider: "microsoft", 
+                    newUserCallbackURL: "/welcome"
+                  })}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <title>Login with Microsoft</title>
@@ -100,7 +103,10 @@ export function LoginForm({
                   type="button"
                   variant="outline"
                   className="w-full ring-1 ring-emerald-400 hover:ring-emerald-600 transition-ring duration-300"
-                  onClick={() => signIn.social({ provider: "google" })}
+                  onClick={() => signIn.social({ 
+                    provider: "google",
+                    newUserCallbackURL: "/welcome"
+                  })}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <title>Login with Google</title>
@@ -115,7 +121,10 @@ export function LoginForm({
                   type="button"
                   variant="outline"
                   className="w-full ring-1 ring-emerald-400 hover:ring-emerald-600 transition-ring duration-300"
-                  onClick={() => signIn.social({ provider: "github" })}
+                  onClick={() => signIn.social({ 
+                    provider: "github",
+                    newUserCallbackURL: "/welcome"
+                  })}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 438.549 438.549">
                     <title>Login with Github</title>
