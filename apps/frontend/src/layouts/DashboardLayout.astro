@@ -1,0 +1,60 @@
+---
+import "../styles/global.css";
+import AppDashboardLayout from "@/components/sidebar/sidebar-layout";
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const navigation = [
+  {
+    title: "Home",
+    path: "/",
+    icon: "Home"
+  },
+  {
+    title: "Stream",
+    path: "/stream",
+    icon: "Waves"
+  },
+  {
+    title: "README",
+    path: "/readme",
+    icon: "FileText"
+  },
+  {
+    title: "MIT License",
+    path: "/mit-license",
+    icon: "Scale"
+  }
+];
+
+const { 
+  title,
+  description = "A beautiful dashboard built with Astro and shadcn/ui",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+    <script is:inline>
+      // Your theme script here (unchanged)
+    </script>
+    <script>
+      import { initLayout } from '../stores/layout'
+      initLayout()
+    </script>
+  </head>
+  <body class="min-h-screen bg-background font-sans antialiased">
+    <AppDashboardLayout client:load>
+      <slot />
+    </AppDashboardLayout>
+  </body>
+</html>

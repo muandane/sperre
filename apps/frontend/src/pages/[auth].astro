@@ -1,0 +1,35 @@
+---
+import Layout from "@/layouts/AuthLayout.astro";
+import { LoginForm } from "@/components/auth/login-form";
+import { RegistrationForm } from "@/components/auth/reg-form";
+import { SignOutForm } from "@/components/auth/signout-form";
+
+export function getStaticPaths() {
+  return [
+    { params: { auth: 'signin' } },
+    { params: { auth: 'signup' } },
+    { params: { auth: 'signout' } },
+  ];
+}
+
+const { auth } = Astro.params;
+
+const getTitle = (authType: string) => {
+  switch (authType) {
+    case 'signin':
+      return 'Sign In';
+    case 'signup':
+      return 'Sign Up';
+    case 'signout':
+      return 'Sign Out';
+    default:
+      return 'Authentication';
+  }
+};
+---
+
+<Layout title={getTitle(auth)}>
+  {auth === 'signin' && <LoginForm client:load />}
+  {auth === 'signup' && <RegistrationForm client:load />}
+  {auth === 'signout' && <SignOutForm client:load />}
+</Layout>
